@@ -1,0 +1,104 @@
+
+training_config:
+  model_type : BERT #BERT or lstm or mlp or cnn_lstm or xgb or rf
+  learning_rate : 0.001  # 0.001 for k-fold and subject out  #0.002 for session out
+  # optimizer_type : 'adam' #adam, adabelief, SGD
+  computing_device : 'cuda' #cuda #cpu
+  # loss_type: 'cross_entropy' #focal_loss, cross_entropy
+  num_epochs : 5  # 100 for k-fold  # 5 for subject out and session out
+  batch_size : 1024  # 1024 for k-fold #128 for subject out  # 256 for session out
+  seed: 10
+  p_val: 0.1
+
+
+  model_config:
+    transformer_config:
+      upsample_unit: "CNN" #"CNN" or "identity"
+      kernel_size: 1      
+      hidden_size: 128 #256   #64 for k-fold and session out   # 32 for subject out 
+
+
+      num_hidden_layers: 4 # 4 for k-fold
+      intermediate_size: 256  # 256 for k-fold    # 64 for subject out # 128 for session out
+      num_attention_heads: 2  #2 for k-fold
+      hidden_activation: "gelu"
+      attention_probs_dropout_prob: 0.1
+      hidden_dropout_prob: 0.1
+      layer_drop_prob: 0.1
+      # position_embedding_dim: 32 # 64 for k-fold
+      
+      attention_option: custom
+      attention_config:
+        kernel_size: 5
+      
+    LSTM_config:
+      num_hidden_units: 64
+      dropout_prob: 0.1
+    
+    CNN1D_LSTM_config:
+      num_hidden_units: 32
+      dropout_prob: 0.1
+      num_kernels: 16
+      kernel_size: 5
+      stride_size: 1
+
+    CNN1D_config:
+      dropout_prob: 0.1
+      num_kernels1: 16
+      num_kernels2: 16
+      kernel1_size: 5
+      stride1_size: 5
+      kernel2_size: 3
+      stride2_size: 1
+
+    XGB_config:
+      num_trees: 100
+      trees_depth: 15
+      
+
+eval_config:
+  dataset_type: 'mine'   #'mine' 'new_paper'
+
+
+  mine_param:
+    data_fields: ['acccut_1', 'acccut_2', 'acccut_3', 'magCalcut_1', 'magCalcut_2', 'magCalcut_3']
+    # ['acccut_1', 'acccut_2', 'acccut_3', 'magCalcut_1', 'magCalcut_2', 'magCalcut_3', 'magcut_1', 'magcut_2', 'magcut_3', 'EAcut_1', 'EAcut_2', 'EAcut_3']
+    # data_fields: ['acccut_1', 'acccut_2', 'acccut_3']
+
+    patient_ids: ['P1', 'P2','P3','P4','P5','P6','P7','P8','P9','P10','P11','P12']
+    # patient_ids: ['P1','P2']
+    # ['P2','P3','P4','P6','P7','P8','P9','P10','P11','P12']
+    # ['P2','P3','P4','P5','P6','P8','P9','P10','P11','P12']
+    # ['P2','P3','P4','P5','P6','P8']
+
+  device: 'A'
+  new_paper_param:
+    data_fields: ["x-axis (g)", "y-axis (g)", "z-axis (g)"] # , "roll", "pitch", "yaw"
+    patient_ids: ['P1', 'P2','P3','P4','P5','P6','P7','P8','P9','P10','P11','P12', 'P13','P14','P15', 'P16','P17']
+  use_euler_angles: True
+
+  mode: 'patient_out' #'session_out' 'k_fold' 'patient_out'
+  Method: Both #1 (which is sequential) or 2 (which is free style) or 'Both'
+  Head Movement: 'Both' #'Yes' or 'No' or 'Both'
+  Brush : 'None' # 'Electronic' or 'Manual' or 'Both' or 'None'(for having brush embedding)
+  Direction : 'Both' # 1 or 2 or 'Both'
+  num_dental_regs: 9
+  
+  
+  total_fold_num : 4
+  
+
+segment_config:
+  mine_param:
+    segment_length : 32 # 32   #5 for rf
+    segment_stride : 5
+  new_paper_param:
+    segment_length : 64 # 32   #5 for rf
+    segment_stride : 10
+
+
+dataset_params:
+  normalize: True
+
+
+
